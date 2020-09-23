@@ -17,8 +17,16 @@
 
 window.findNRooksSolution = function(n) {
   var solution = new Board({n: n}); //fixme
-  for (let i = 0; i < n; i++) {
-    solution.togglePiece(i, i);
+  // for (let i = 0; i < n; i++) {
+  //   solution.togglePiece(i, i);
+  // }
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      solution.togglePiece(r, c);
+      if (solution.hasAnyRooksConflicts()) {
+        solution.togglePiece(r, c);
+      }
+    }
   }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
@@ -26,8 +34,12 @@ window.findNRooksSolution = function(n) {
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
+/*
+Start at top left square, and toggle a piece, then move through to the next available square with no conflicts. Toggle it and move again. When no more spots are left, we have a solution, and we increment, then we step backward one square. See if that square had another spot it can move to. Do the same thing again until all solutions have been stepped through. Return the counter variable.
+*/
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var board = new Board({n: n});
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
