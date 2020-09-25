@@ -86,20 +86,49 @@ window.findNQueensSolution = function(n) {
           solution.togglePiece(row, i);
         } else {
           solver(row + 1);
+          if (solved) {
+            return solution.rows();
+          }
           solution.togglePiece(row, i);
         }
       }
     }
   };
-  return solver(0);
+  solver(0);
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  return solution.rows();
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
-// window.countNQueensSolutions = function(n) {
-//   var solutionCount = undefined; //fixme
-//   //if n is 2 or 3, return 0;
-//   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-//   return solutionCount;
-// };
+window.countNQueensSolutions = function(n) {
+  var solutionCount = 0;
+  //if n is 2 or 3, return 0;
+  if (n === 2 || n === 3) {
+    return 0;
+  }
+
+  var board = new Board({n: n});
+
+  let solver = function(row) {
+
+    if (row === n) {
+      solutionCount++;
+      return;
+    } else {
+      for (let i = 0; i < n; i++) {
+        board.togglePiece(row, i);
+        if (board.hasAnyQueensConflicts()) {
+          board.togglePiece(row, i);
+        } else {
+          solver(row + 1);
+          board.togglePiece(row, i);
+        }
+      }
+    }
+  };
+  solver(0);
+
+  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  return solutionCount;
+};
