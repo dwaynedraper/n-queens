@@ -83,6 +83,7 @@
       let sum = row.reduce((a, b) => a + b);
       return sum > 1;
     },
+    // O(n)
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
@@ -94,6 +95,7 @@
       }
       return false;
     },
+    // O(n^2)
 
 
 
@@ -111,6 +113,7 @@
       }
       return count > 1;
     },
+    // O(n)
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
@@ -122,6 +125,7 @@
       }
       return false;
     },
+    // O(n^2)
 
 
 
@@ -146,6 +150,7 @@
       }
       return count > 1;
     },
+    // O(n)
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
@@ -157,6 +162,7 @@
       }
       return false;
     },
+    // O(n^2)
 
 
 
@@ -179,6 +185,7 @@
       }
       return count > 1;
     },
+    // O(n)
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
@@ -190,6 +197,7 @@
       }
       return false;
     }
+    // O(n^2)
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
