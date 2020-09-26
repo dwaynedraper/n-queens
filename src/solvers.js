@@ -17,20 +17,26 @@
 
 window.findNRooksSolution = function(n) {
   var solution = new Board({n: n});
-  // for (let i = 0; i < n; i++) {
-  //   solution.togglePiece(i, i);
-  // }
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      solution.togglePiece(r, c);
-      if (solution.hasAnyRooksConflicts()) {
-        solution.togglePiece(r, c);
-      }
-    }
+  for (let i = 0; i < n; i++) {
+    solution.togglePiece(i, i);
   }
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution.rows();
+  // Time complexity of refactored
+
+  //Original solution: (does not have great time complexity, so refactoring)
+  // var solution = new Board({n: n});
+
+  // for (let r = 0; r < n; r++) {
+  //   for (let c = 0; c < n; c++) {
+  //     solution.togglePiece(r, c);
+  //     if (solution.hasAnyRooksConflicts()) {
+  //       solution.togglePiece(r, c);
+  //     }
+  //   }
+  // }
+
+  // console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  // return solution.rows();
 };
 // O(n^n)
 
@@ -41,6 +47,7 @@ Start at top left square, and toggle a piece, then move through to the next avai
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
   var board = new Board({n: n});
+  var indexes = Array(n);
 
   let solver = function(row) {
 
@@ -49,13 +56,14 @@ window.countNRooksSolutions = function(n) {
       return;
     } else {
       for (let i = 0; i < n; i++) {
-        board.togglePiece(row, i);
-        if (board.hasAnyRooksConflicts()) {
-          board.togglePiece(row, i);
-        } else {
-          solver(row + 1);
-          board.togglePiece(row, i);
+        if (indexes[i]) {
+          continue;
         }
+        board.togglePiece(row, i);
+        indexes[i] = 1;
+        solver(row + 1);
+        board.togglePiece(row, i);
+        indexes[i] = 0;
       }
     }
   };
@@ -64,34 +72,53 @@ window.countNRooksSolutions = function(n) {
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
-// O(n^n)
+// O(n^n) before Advanced Content optimization
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  // if (n === 0 || n === 2 || n === 3) {
-  //   return 0;
-  // }
   var solution = new Board({n: n});
   let solved = false;
+  var colIndexes = Array(n);
+  var majorIndexesLength = n === 0 ? 0 : n * 2 - 1;
+  var majorIndexes = Array(majorIndexesLength);
 
   let solver = function(row) {
     if (row === n) {
-
       solved = true;
-      //console.log('return', solution.rows(), row);
-      return solution.rows();
     } else {
+      // for (let i = 0; i < n; i++) {
+      //   solution.togglePiece(row, i);
+      //   if (solution.hasAnyQueensConflicts()) {
+      //     solution.togglePiece(row, i);
+      //   } else {
+      //     solver(row + 1);
+      //     if (solved) {
+      //       return;
+      //     }
+      //     solution.togglePiece(row, i);
+      //   }
+      // }
+
+      //Solution below uses an array to store indexes that have already been placed to avoid having to search repeatedly. We cut On2 time complexity down to constant time lookup for everything but minor diagonal conflicts.
       for (let i = 0; i < n; i++) {
+        if (colIndexes[i] || majorIndexes[(i - row + (n - 1))]) {
+          continue;
+        }
         solution.togglePiece(row, i);
-        //console.log('for board:', solution, 'rows', solution.rows());
-        if (solution.hasAnyQueensConflicts()) {
+        colIndexes[i] = 1;
+        majorIndexes[(i - row + (n - 1))] = 1;
+        if (solution.hasAnyMinorDiagonalConflicts()) {
           solution.togglePiece(row, i);
+          colIndexes[i] = 0;
+          majorIndexes[(i - row + (n - 1))] = 0;
         } else {
           solver(row + 1);
           if (solved) {
-            return solution.rows();
+            return;
           }
           solution.togglePiece(row, i);
+          colIndexes[i] = 0;
+          majorIndexes[(i - row + (n - 1))] = 0;
         }
       }
     }
@@ -112,6 +139,10 @@ window.countNQueensSolutions = function(n) {
   }
 
   var board = new Board({n: n});
+  var colIndexes = Array(n);
+  var majorIndexesLength = n === 0 ? 0 : n * 2 - 1;
+  var majorIndexes = Array(majorIndexesLength);
+
 
   let solver = function(row) {
 
@@ -120,12 +151,21 @@ window.countNQueensSolutions = function(n) {
       return;
     } else {
       for (let i = 0; i < n; i++) {
+        if (colIndexes[i] || majorIndexes[(i - row + (n - 1))]) {
+          continue;
+        }
         board.togglePiece(row, i);
-        if (board.hasAnyQueensConflicts()) {
+        colIndexes[i] = 1;
+        majorIndexes[(i - row + (n - 1))] = 1;
+        if (board.hasAnyMinorDiagonalConflicts()) {
           board.togglePiece(row, i);
+          colIndexes[i] = 0;
+          majorIndexes[(i - row + (n - 1))] = 0;
         } else {
           solver(row + 1);
           board.togglePiece(row, i);
+          colIndexes[i] = 0;
+          majorIndexes[(i - row + (n - 1))] = 0;
         }
       }
     }
