@@ -45,32 +45,41 @@ window.findNRooksSolution = function(n) {
 Start at top left square, and toggle a piece, then move through to the next available square with no conflicts. Toggle it and move again. When no more spots are left, we have a solution, and we increment, then we step backward one square. See if that square had another spot it can move to. Do the same thing again until all solutions have been stepped through. Return the counter variable.
 */
 window.countNRooksSolutions = function(n) {
-  var solutionCount = 0;
-  var board = new Board({n: n});
-  var indexes = Array(n);
+  // leaving our original solution to show that we figured out the logic
+  // refactoring to solve in no time at all based on a discovery that the solutions for n board is the same as n factorial
+  let factorial = 1;
+  for (let i = 2; i <= n; i++) {
+    factorial *= i;
+  }
+  console.log('Number of solutions for ' + n + ' rooks:', factorial);
+  return factorial;
 
-  let solver = function(row) {
+  // var solutionCount = 0;
+  // var board = new Board({n: n});
+  // var indexes = Array(n);
 
-    if (row === n) {
-      solutionCount++;
-      return;
-    } else {
-      for (let i = 0; i < n; i++) {
-        if (indexes[i]) {
-          continue;
-        }
-        board.togglePiece(row, i);
-        indexes[i] = 1;
-        solver(row + 1);
-        board.togglePiece(row, i);
-        indexes[i] = 0;
-      }
-    }
-  };
-  solver(0);
+  // let solver = function(row) {
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  //   if (row === n) {
+  //     solutionCount++;
+  //     return;
+  //   } else {
+  //     for (let i = 0; i < n; i++) {
+  //       if (indexes[i]) {
+  //         continue;
+  //       }
+  //       board.togglePiece(row, i);
+  //       indexes[i] = 1;
+  //       solver(row + 1);
+  //       board.togglePiece(row, i);
+  //       indexes[i] = 0;
+  //     }
+  //   }
+  // };
+  // solver(0);
+
+  // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // return solutionCount;
 };
 // O(n^n) before Advanced Content optimization
 
@@ -132,7 +141,11 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
+  //I don't know if we'll be able to code this, but I want to share our finding anyway. We have found a way using symmetry to cut time complexity to
+
   var solutionCount = 0;
+  var halfCount = 0;
+  var midCount = 0;
   //if n is 2 or 3, return 0;
   if (n === 2 || n === 3) {
     return 0;
@@ -142,8 +155,6 @@ window.countNQueensSolutions = function(n) {
   var colIndexes = Array(n);
   var majorIndexesLength = n === 0 ? 0 : n * 2 - 1;
   var majorIndexes = Array(majorIndexesLength);
-
-
   let solver = function(row) {
 
     if (row === n) {
@@ -170,6 +181,20 @@ window.countNQueensSolutions = function(n) {
       }
     }
   };
+  if (n > 3 && n % 2 === 0) {
+    for (let h = 0; h < n / 2; h++) {
+      board.togglePiece(0, h);
+      colIndexes[h] = 1;
+      majorIndexes[(h - 0 + (n - 1))] = 1;
+      solver(1);
+      board.togglePiece(0, h);
+      colIndexes[h] = 0;
+      majorIndexes[(h - 0 + (n - 1))] = 0;
+    }
+    return solutionCount * 2;
+  }
+
+
   solver(0);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
