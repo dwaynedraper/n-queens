@@ -144,8 +144,6 @@ window.countNQueensSolutions = function(n) {
   //I don't know if we'll be able to code this, but I want to share our finding anyway. We have found a way using symmetry to cut time complexity to
 
   var solutionCount = 0;
-  var halfCount = 0;
-  var midCount = 0;
   //if n is 2 or 3, return 0;
   if (n === 2 || n === 3) {
     return 0;
@@ -155,6 +153,7 @@ window.countNQueensSolutions = function(n) {
   var colIndexes = Array(n);
   var majorIndexesLength = n === 0 ? 0 : n * 2 - 1;
   var majorIndexes = Array(majorIndexesLength);
+
   let solver = function(row) {
 
     if (row === n) {
@@ -181,17 +180,68 @@ window.countNQueensSolutions = function(n) {
       }
     }
   };
+
   if (n > 3 && n % 2 === 0) {
     for (let h = 0; h < n / 2; h++) {
       board.togglePiece(0, h);
       colIndexes[h] = 1;
-      majorIndexes[(h - 0 + (n - 1))] = 1;
+      majorIndexes[(h + (n - 1))] = 1;
       solver(1);
       board.togglePiece(0, h);
       colIndexes[h] = 0;
-      majorIndexes[(h - 0 + (n - 1))] = 0;
+      majorIndexes[(h + (n - 1))] = 0;
     }
+    console.log('Number of solutions for ' + n + ' queens:', solutionCount);
     return solutionCount * 2;
+  }
+
+  // if (n > 3 && n % 2 !== 0) {
+  //   let mid = Math.floor(n / 2);
+  //   for (let h = 0; h < mid; h++) {
+  //     board.togglePiece(0, h);
+  //     colIndexes[h] = 1;
+  //     majorIndexes[(h + (n - 1))] = 1;
+  //     solver(1);
+  //     board.togglePiece(0, h);
+  //     colIndexes[h] = 0;
+  //     majorIndexes[(h + (n - 1))] = 0;
+  //   }
+  //   solutionCount = solutionCount * 2;
+  //   board.togglePiece(0, mid);
+  //   colIndexes[mid] = 1;
+  //   majorIndexes[(mid + (n - 1))] = 1;
+  //   solver(1);
+  //   board.togglePiece(0, mid);
+  //   colIndexes[mid] = 0;
+  //   majorIndexes[(mid + (n - 1))] = 0;
+
+  //   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  //   return solutionCount;
+  // }
+
+
+  if (n > 3 && n % 2 !== 0) {
+    var midIndex = Math.floor(n / 2);
+    for (let j = 0; j < midIndex; j++) {
+      board.togglePiece(0, j);
+      colIndexes[j] = 1;
+      majorIndexes[(j + (n - 1))] = 1;
+      solver(1);
+      board.togglePiece(0, j);
+      colIndexes[j] = 0;
+      majorIndexes[(j + (n - 1))] = 0;
+    }
+    solutionCount *= 2;
+    board.togglePiece(0, (midIndex));
+    colIndexes[(midIndex)] = 1;
+    majorIndexes[((midIndex) + (n - 1))] = 1;
+    solver(1);
+    board.togglePiece(0, (midIndex));
+    colIndexes[(midIndex)] = 0;
+    majorIndexes[((midIndex) + (n - 1))] = 0;
+    console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+    //if (n === 7) return solutionCount - 2;
+    return solutionCount;
   }
 
 
